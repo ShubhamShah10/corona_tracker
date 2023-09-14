@@ -1,0 +1,68 @@
+import React from 'react';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Button from '@material-ui/core/Button';
+import { Trans } from 'react-i18next';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core';
+import actions from 'redux/actions/actions';
+import buttonsCss from 'styles/buttons';
+import ShowMeMore from 'components/pages/ShowMeMore';
+import MyHealthLog from './MyHealthLog';
+
+const useStyles = makeStyles({
+  buttons: {
+    ...buttonsCss.buttons,
+    margin: '0px 8px 2px 8px',
+    width: '150px',
+  },
+});
+
+const HealthLogToggle = props => {
+  const { toggleValue, setToggleValue, setDetailData } = props;
+  const classes = useStyles();
+
+  const onShowMeMoreClick = () => {
+    setDetailData([]);
+    setToggleValue('showMeMore');
+  };
+
+  return (
+    <div>
+      <div>
+        <ButtonGroup size="medium" aria-label="outlined button group">
+          <Button onClick={() => setToggleValue('myHealthLog')} className={classes.buttons}>
+            <Trans i18nKey="logSection.text.showLog.myHealthLog" />
+          </Button>
+          <Button onClick={onShowMeMoreClick} className={classes.buttons}>
+            <Trans i18nKey="logSection.text.showMore.showMeMore" />
+          </Button>
+        </ButtonGroup>
+      </div>
+      {toggleValue === 'myHealthLog' && <MyHealthLog />}
+      {toggleValue === 'showMeMore' && <ShowMeMore />}
+    </div>
+  );
+};
+
+HealthLogToggle.propTypes = {
+  toggleValue: PropTypes.string.isRequired,
+  setToggleValue: PropTypes.func.isRequired,
+  setDetailData: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => {
+  return {
+    toggleValue: state.healthToggleReducer.toggleValue,
+    observations: state.observationsReducer.observations,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setToggleValue: toggleValue => dispatch(actions.setToggleValue(toggleValue)),
+    setDetailData: data => dispatch(actions.setDetailData(data)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HealthLogToggle);
